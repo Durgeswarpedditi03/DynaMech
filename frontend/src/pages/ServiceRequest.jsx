@@ -2,11 +2,33 @@ import { useState } from 'react';
 import { MapPin, UploadCloud } from 'lucide-react';
 
 const initialForm = {
+  vehicleType: 'bike',
+  vehicleModel: 'Royal Enfield Classic 350',
+  customModel: '',
   vehicle: 'Royal Enfield Classic 350',
   category: 'Engine',
   issue: 'Bike won\'t start and makes a clicking sound.',
   location: 'HSR Layout, Bengaluru',
   urgency: 'Urgent'
+};
+
+const vehicleModels = {
+  bike: [
+    'Hero Splendor', 'Hero Passion', 'Hero Xtreme', 'Honda Activa', 'Honda Shine', 'Honda Unicorn',
+    'TVS Apache', 'TVS Jupiter', 'TVS Raider', 'Bajaj Pulsar', 'Bajaj Platina', 'Bajaj Avenger',
+    'Royal Enfield Classic 350', 'Royal Enfield Hunter 350', 'Royal Enfield Bullet', 'Royal Enfield Himalayan',
+    'Yamaha FZ', 'Yamaha R15', 'Yamaha MT-15', 'KTM Duke', 'KTM RC', 'Suzuki Access', 'Suzuki Gixxer',
+    'Jawa', 'Yezdi', 'Triumph', 'Harley-Davidson', 'BMW Motorrad', 'Ducati', 'Aprilia', 'Vespa',
+    'Ola Electric', 'Ather', 'Revolt', 'Husqvarna', 'Ultraviolette', 'Other / Enter manually'
+  ],
+  car: [
+    'Maruti Suzuki Swift', 'Maruti Suzuki Baleno', 'Maruti Suzuki Brezza', 'Hyundai i20', 'Hyundai Creta',
+    'Hyundai Venue', 'Tata Nexon', 'Tata Punch', 'Tata Harrier', 'Mahindra Scorpio', 'Mahindra Thar',
+    'Mahindra XUV700', 'Honda City', 'Honda Amaze', 'Toyota Innova', 'Toyota Fortuner', 'Kia Seltos',
+    'Kia Sonet', 'Volkswagen Virtus', 'Volkswagen Taigun', 'Skoda Slavia', 'Skoda Kushaq', 'Renault Kwid',
+    'Renault Duster', 'Nissan Magnite', 'MG Astor', 'MG Hector', 'Jeep Compass', 'Ford EcoSport',
+    'BMW', 'Mercedes-Benz', 'Audi', 'Volvo', 'Other / Enter manually'
+  ]
 };
 
 const vehicleProblemCategories = {
@@ -29,12 +51,28 @@ function getVehicleType(vehicleName) {
 export default function ServiceRequest() {
   const [form, setForm] = useState(initialForm);
   const [preview, setPreview] = useState('');
-  const vehicleType = getVehicleType(form.vehicle);
+  const vehicleType = form.vehicleType;
   const categories = vehicleProblemCategories[vehicleType];
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setForm((current) => {
+      if (name === 'vehicleType') {
+        const nextModel = value === 'cycle' ? '' : vehicleModels[value][0];
+        return { ...current, vehicleType: value, vehicleModel: nextModel, customModel: '', vehicle: value === 'cycle' ? 'Cycle' : nextModel, category: vehicleProblemCategories[value][0] };
+      }
+
+      if (name === 'vehicleModel') {
+        const nextVehicle = value === 'Other / Enter manually' ? current.customModel : value;
+        const nextCategories = vehicleProblemCategories[current.vehicleType];
+        return { ...current, vehicleModel: value, vehicle: nextVehicle, category: nextCategories.includes(current.category) ? current.category : nextCategories[0] };
+      }
+
+      if (name === 'customModel') {
+        const nextCategories = vehicleProblemCategories[current.vehicleType];
+        return { ...current, customModel: value, vehicle: value, category: nextCategories.includes(current.category) ? current.category : nextCategories[0] };
+      }
+
       if (name !== 'vehicle') return { ...current, [name]: value };
 
       const nextCategories = vehicleProblemCategories[getVehicleType(value)];
@@ -64,9 +102,22 @@ export default function ServiceRequest() {
       <div className="request-layout">
         <form className="request-form auth-form">
           <label>
-            <span>Select vehicle</span>
-            <input name="vehicle" value={form.vehicle} onChange={handleChange} />
+            <span>Vehicle type</span>
+            <select name="vehicleType" value={form.vehicleType} onChange={handleChange}>
+              <option value="cycle">Cycle</option>
+              <option value="bike">Bike</option>
+              <option value="car">Car</option>
+            </select>
           </label>
+          {vehicleType !== 'cycle' && (
+            <label>
+              <span>Company or model</span>
+              <select name="vehicleModel" value={form.vehicleModel} onChange={handleChange}>
+                {vehicleModels[vehicleType].map((model) => <option key={model}>{model}</option>)}
+              </select>
+              {form.vehicleModel === 'Other / Enter manually' && <input name="customModel" value={form.customModel} onChange={handleChange} placeholder={`Enter your ${vehicleType} company or model`} />}
+            </label>
+          )}
           <label>
             <span>Problem category</span>
             <select name="category" value={form.category} onChange={handleChange}>
