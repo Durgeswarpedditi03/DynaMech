@@ -1,76 +1,12 @@
-import { motion } from 'framer-motion';
-import { ArrowRight, BadgeCheck, BatteryCharging, CarFront, CircleDashed, Clock3, Gauge, MapPinned, ShieldCheck, Sparkles, Star, TrendingUp, Zap } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Hero from '../components/Hero';
-import ServiceCard from '../components/ServiceCard';
-import { quickActions, processSteps, problemCategories, mechanics, spareParts } from '../data/mockData';
-
-const iconMap = {
-  BatteryCharging,
-  CarFront,
-  CircleDashed,
-  Gauge,
-  MapPinned,
-  ShieldCheck,
-  Star,
-  Sparkles,
-  Zap,
-  TrendingUp,
-  Clock3,
-  BadgeCheck
-};
+import { mechanics, spareParts } from '../data/mockData';
 
 export default function Home() {
   return (
     <>
       <Hero />
-
-      <section className="section-shell">
-        <div className="section-heading">
-          <div className="eyebrow">Quick assistance</div>
-          <h2>What&apos;s happening with your vehicle?</h2>
-        </div>
-        <div className="service-grid">
-          {quickActions.map((item, index) => (
-            <ServiceCard key={item.title} title={item.title} description={item.description} icon={item.icon} accent={item.accent} index={index} />
-          ))}
-        </div>
-      </section>
-
-      <section className="section-shell">
-        <div className="section-heading">
-          <div className="eyebrow">How it works</div>
-          <h2>How DynaMech Works</h2>
-        </div>
-        <div className="process-grid">
-          {processSteps.map((step) => (
-            <motion.div className="process-step" key={step.number} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }}>
-              <span className="step-number">{step.number}</span>
-              <div className="step-icon"><Gauge size={18} /></div>
-              <h3>{step.title}</h3>
-              <p>{step.text}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      <section className="section-shell">
-        <div className="section-heading">
-          <div className="eyebrow">Problem categories</div>
-          <h2>What happened to your vehicle?</h2>
-        </div>
-        <div className="category-grid">
-          {problemCategories.map((category) => {
-            const Icon = iconMap[category.icon] || Gauge;
-            return (
-              <Link to="/service-request" key={category.name} className="category-item">
-                <div className="category-icon"><Icon size={20} /></div>
-                <span>{category.name}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
 
       <section className="section-shell smart-assist">
         <div className="section-heading left-align">
