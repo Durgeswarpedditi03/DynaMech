@@ -9,12 +9,41 @@ const initialForm = {
   urgency: 'Urgent'
 };
 
+const vehicleProblemCategories = {
+  cycle: ['Brakes', 'Tyres', 'Chain', 'Gears', 'Pedals', 'Frame', 'Other'],
+  bike: ['Engine', 'Brakes', 'Battery', 'Tyres', 'Chain', 'Clutch', 'Electrical', 'Suspension', 'Other'],
+  car: ['Engine', 'Brakes', 'Battery', 'Tyres', 'Electrical', 'Transmission', 'Suspension', 'Cooling', 'AC', 'Other'],
+  truck: ['Engine', 'Brakes', 'Battery', 'Tyres', 'Electrical', 'Transmission', 'Suspension', 'Cooling', 'Other'],
+  default: ['Engine', 'Brakes', 'Battery', 'Tyres', 'Electrical', 'Other']
+};
+
+function getVehicleType(vehicleName) {
+  const name = vehicleName.toLowerCase();
+  if (/(cycle|bicycle)/.test(name)) return 'cycle';
+  if (/(bike|motorcycle|scooter|scooty|moped|royal enfield|ktm|yamaha|bajaj|hero|honda cb)/.test(name)) return 'bike';
+  if (/(car|sedan|hatchback|suv|van|jeep)/.test(name)) return 'car';
+  if (/(truck|lorry|pickup)/.test(name)) return 'truck';
+  return 'default';
+}
+
 export default function ServiceRequest() {
   const [form, setForm] = useState(initialForm);
   const [preview, setPreview] = useState('');
+  const vehicleType = getVehicleType(form.vehicle);
+  const categories = vehicleProblemCategories[vehicleType];
 
   const handleChange = (event) => {
-    setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
+    const { name, value } = event.target;
+    setForm((current) => {
+      if (name !== 'vehicle') return { ...current, [name]: value };
+
+      const nextCategories = vehicleProblemCategories[getVehicleType(value)];
+      return {
+        ...current,
+        vehicle: value,
+        category: nextCategories.includes(current.category) ? current.category : nextCategories[0]
+      };
+    });
   };
 
   const handleImage = (event) => {
@@ -41,14 +70,9 @@ export default function ServiceRequest() {
           <label>
             <span>Problem category</span>
             <select name="category" value={form.category} onChange={handleChange}>
-              <option>Engine</option>
-              <option>Brakes</option>
-              <option>Battery</option>
-              <option>Electrical</option>
-              <option>Tyres</option>
-              <option>Chain</option>
-              <option>Other</option>
+              {categories.map((category) => <option key={category}>{category}</option>)}
             </select>
+            <small className="field-hint">Showing common problems for {vehicleType === 'default' ? 'this vehicle' : `${vehicleType}s`}.</small>
           </label>
           <label>
             <span>Problem description</span>
