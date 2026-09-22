@@ -81,7 +81,6 @@ button { cursor: pointer; }
 .text-link { display: inline-flex; align-items: center; gap: 6px; color: var(--copper); font-size: 0.86rem; font-weight: 700; white-space: nowrap; }
 
 .hero { display: grid; grid-template-columns: 1fr 1fr; align-items: center; min-height: 600px; gap: clamp(1.5rem, 4vw, 4rem); padding: clamp(1.8rem, 5vw, 5rem); background: linear-gradient(112deg, rgba(255,253,248,0.96) 0%, rgba(244,241,235,0.9) 53%, rgba(217,210,197,0.35) 100%); }
-.hero::before { position: absolute; top: 15%; right: 52%; width: 220px; height: 220px; content: ''; border: 1px solid rgba(165,106,67,0.18); border-radius: 50%; }
 .hero-copy { position: relative; z-index: 2; }
 .hero h1 { max-width: 620px; margin: 0 0 20px; color: var(--graphite); font-family: 'Manrope', sans-serif; font-size: clamp(3rem, 5vw, 5rem); line-height: 0.99; letter-spacing: -0.065em; }
 .hero p { max-width: 540px; margin: 0; color: var(--charcoal); font-size: 1.05rem; }
@@ -91,7 +90,6 @@ button { cursor: pointer; }
 .hero-stats strong { display: block; color: var(--graphite); font-family: 'Manrope', sans-serif; font-size: 1.5rem; }
 .hero-stats span { color: var(--muted); font-size: 0.75rem; }
 .hero-visual-wrap { position: relative; min-height: 450px; }
-.hero-visual-wrap::before { position: absolute; top: 20px; right: 12px; width: 76%; height: 80%; content: ''; border: 1px solid rgba(75,74,67,0.2); border-radius: 50% 46% 48% 42%; transform: rotate(-9deg); }
 .hero-visual { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; min-height: 450px; }
 .hero-photo { width: 92%; height: 400px; object-fit: cover; border-radius: 12px 76px 12px 76px; box-shadow: var(--shadow-lg); filter: saturate(0.8) sepia(0.08); }
 .hero-photo-caption { position: absolute; right: 4%; bottom: 6%; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1px solid rgba(255,253,248,0.5); border-radius: 8px; color: var(--card); background: rgba(41,42,39,0.88); font-size: 0.75rem; font-weight: 700; backdrop-filter: blur(8px); }
