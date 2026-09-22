@@ -5,9 +5,6 @@ import { NavLink } from 'react-router-dom';
 const navItems = [
   { label: 'Home', to: '/' },
   { label: 'Services', to: '/services' },
-  { label: 'How It Works', to: '/how-it-works' },
-  { label: 'Mechanics', to: '/mechanics' },
-  { label: 'Spare Parts', to: '/spare-parts' },
   { label: 'About', to: '/about' }
 ];
 
@@ -46,11 +43,10 @@ export default function Navbar({ user, onLogout }) {
             </>
           ) : (
             <>
-              <NavLink to="/login" className="btn btn-ghost">Login</NavLink>
-              <NavLink to="/register" className="btn btn-ghost">Register</NavLink>
+              <NavLink to="/login" className="btn btn-primary">Login</NavLink>
+              <NavLink to="/register" className="btn btn-primary">Register</NavLink>
             </>
           )}
-          <NavLink to="/service-request" className="btn btn-primary">Request Service</NavLink>
         </div>
 
         <button className="menu-toggle" aria-label="Toggle navigation" onClick={() => setMenuOpen((v) => !v)}>
