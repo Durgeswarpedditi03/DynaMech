@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Cog, ShieldCheck } from 'lucide-react';
+import { ArrowRight, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Hero() {
@@ -7,8 +7,8 @@ export default function Hero() {
     <section className="hero section-shell">
       <div className="hero-copy">
         <div className="eyebrow">Smart vehicle assistance</div>
-        <h1>Back on the Road,<br />Without the Hassle.</h1>
-        <p>Connect with trusted mechanics, get roadside assistance and find the right spare parts — all from one platform.</p>
+        <h1>Your Vehicle Stops.<br />We Get You Moving.</h1>
+        <p>Get instant roadside assistance, connect with the right mechanic, diagnose vehicle problems, and find compatible spare parts — all in one intelligent platform.</p>
         <div className="hero-actions">
           <Link to="/service-request" className="btn btn-primary">Request a Mechanic <ArrowRight size={16} /></Link>
           <Link to="/spare-parts" className="btn btn-secondary">Explore Spare Parts</Link>
@@ -27,10 +27,8 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: 'easeOut' }}
         >
-          <span className="technical-label">DM / FIELD SUPPORT / 2026</span>
-          <img className="hero-photo" src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=1200&q=85" alt="Motorcycle in a premium workshop" />
+          <img className="hero-photo" src="https://images.unsplash.com/photo-1487754180451-c456f719a1fc?auto=format&fit=crop&w=1200&q=85" alt="Mechanic working on a vehicle in a workshop" />
           <div className="hero-photo-caption"><span className="status-dot" /> Mechanics available nearby <ShieldCheck size={15} /></div>
-          <div className="hero-detail"><Cog size={18} /> Precision care for every ride</div>
         </motion.div>
       </div>
     </section>

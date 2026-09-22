@@ -54,6 +54,7 @@ button { cursor: pointer; }
 .brand-mark { display: inline-flex; align-items: center; gap: 10px; color: var(--graphite); font-family: 'Manrope', sans-serif; font-size: 1.16rem; font-weight: 800; letter-spacing: -0.04em; white-space: nowrap; }
 .brand-icon { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; color: var(--card); background: var(--graphite); }
 .nav-links, .nav-actions { display: flex; align-items: center; gap: 4px; }
+.nav-links { margin-left: auto; }
 .nav-item { position: relative; padding: 9px 10px; color: var(--charcoal); font-size: 0.86rem; font-weight: 600; }
 .nav-item::after { position: absolute; right: 10px; bottom: 2px; left: 10px; height: 2px; content: ''; background: var(--copper); transform: scaleX(0); transition: transform 0.2s ease; }
 .nav-item:hover, .nav-item.active { color: var(--copper); }
@@ -79,10 +80,10 @@ button { cursor: pointer; }
 .muted-copy, .section-shell p { color: var(--muted); }
 .text-link { display: inline-flex; align-items: center; gap: 6px; color: var(--copper); font-size: 0.86rem; font-weight: 700; white-space: nowrap; }
 
-.hero { display: grid; grid-template-columns: 0.92fr 1.08fr; align-items: center; min-height: 600px; gap: clamp(1.5rem, 4vw, 5rem); padding: clamp(1.8rem, 5vw, 5rem); background: linear-gradient(112deg, rgba(255,253,248,0.96) 0%, rgba(244,241,235,0.9) 53%, rgba(217,210,197,0.35) 100%); }
+.hero { display: grid; grid-template-columns: 1fr 1fr; align-items: center; min-height: 600px; gap: clamp(1.5rem, 4vw, 4rem); padding: clamp(1.8rem, 5vw, 5rem); background: linear-gradient(112deg, rgba(255,253,248,0.96) 0%, rgba(244,241,235,0.9) 53%, rgba(217,210,197,0.35) 100%); }
 .hero::before { position: absolute; top: 15%; right: 52%; width: 220px; height: 220px; content: ''; border: 1px solid rgba(165,106,67,0.18); border-radius: 50%; }
 .hero-copy { position: relative; z-index: 2; }
-.hero h1 { max-width: 600px; margin: 0 0 20px; color: var(--graphite); font-family: 'Manrope', sans-serif; font-size: clamp(3.2rem, 6vw, 6rem); line-height: 0.96; letter-spacing: -0.08em; }
+.hero h1 { max-width: 620px; margin: 0 0 20px; color: var(--graphite); font-family: 'Manrope', sans-serif; font-size: clamp(3rem, 5vw, 5rem); line-height: 0.99; letter-spacing: -0.065em; }
 .hero p { max-width: 540px; margin: 0; color: var(--charcoal); font-size: 1.05rem; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
 .hero-stats { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 34px; }
@@ -95,7 +96,6 @@ button { cursor: pointer; }
 .hero-photo { width: 92%; height: 400px; object-fit: cover; border-radius: 12px 76px 12px 76px; box-shadow: var(--shadow-lg); filter: saturate(0.8) sepia(0.08); }
 .hero-photo-caption { position: absolute; right: 4%; bottom: 6%; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1px solid rgba(255,253,248,0.5); border-radius: 8px; color: var(--card); background: rgba(41,42,39,0.88); font-size: 0.75rem; font-weight: 700; backdrop-filter: blur(8px); }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--copper-hover); box-shadow: 0 0 0 4px rgba(185,120,78,0.2); }
-.technical-label { position: absolute; top: 4%; left: 0; color: var(--muted); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; writing-mode: vertical-rl; }
 
 .service-grid, .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .info-card, .category-item, .mechanic-card, .part-card, .dash-card, .dash-panel { border: 1px solid var(--border); background: var(--card); box-shadow: none; transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease; }
