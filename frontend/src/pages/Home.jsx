@@ -1,7 +1,7 @@
-import { ArrowRight, Star } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Hero from '../components/Hero';
-import { mechanics, spareParts } from '../data/mockData';
+import { spareParts } from '../data/mockData';
 
 export default function Home() {
   return (
@@ -22,44 +22,6 @@ export default function Home() {
           ))}
         </div>
         <p className="muted-copy">DynaMech can be extended with AI-based vehicle problem classification for smarter recommendations and faster customer support.</p>
-      </section>
-
-      <section className="section-shell">
-        <div className="section-heading split-heading">
-          <div>
-            <div className="eyebrow">Find reliable mechanics</div>
-            <h2>Find Reliable Mechanics</h2>
-          </div>
-          <Link to="/mechanics" className="text-link">View all <ArrowRight size={16} /></Link>
-        </div>
-        <div className="mechanic-grid">
-          {mechanics.map((mechanic) => (
-            <article key={mechanic.id} className="mechanic-card">
-              <div className="mechanic-header">
-                <img src={mechanic.avatar} alt={mechanic.name} />
-                <div>
-                  <h3>{mechanic.name}</h3>
-                  <span className="verified-badge">{mechanic.verified ? '✓ Verified Mechanic' : 'New Partner'}</span>
-                </div>
-              </div>
-              <div className="meta-row">
-                <span>{mechanic.vehicleTypes.join(' • ')}</span>
-              </div>
-              <div className="metrics-row">
-                <span><Star size={14} fill="currentColor" /> {mechanic.rating}</span>
-                <span>{mechanic.jobs} Jobs Completed</span>
-              </div>
-              <div className="availability-row">
-                <span className={mechanic.available ? 'status available' : 'status offline'}>{mechanic.available ? 'Available Now' : 'Offline'}</span>
-                <span>{mechanic.distance}</span>
-              </div>
-              <div className="card-actions">
-                <button className="btn btn-ghost small">View Profile</button>
-                <button className="btn btn-primary small">Request Mechanic</button>
-              </div>
-            </article>
-          ))}
-        </div>
       </section>
 
       <section className="section-shell">
