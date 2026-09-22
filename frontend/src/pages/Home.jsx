@@ -1,4 +1,4 @@
-import { ArrowRight, ShieldCheck, Star } from 'lucide-react';
+import { ArrowRight, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Hero from '../components/Hero';
 import { mechanics, spareParts } from '../data/mockData';
@@ -62,26 +62,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section-shell reliability-box">
-        <div className="section-heading">
-          <div className="eyebrow">Reliability</div>
-          <h2>Mechanic Reliability Score</h2>
-        </div>
-        <div className="reliability-layout">
-          <div className="score-ring">
-            <div className="score-core">
-              <strong>92</strong>
-              <span>/100</span>
-            </div>
-          </div>
-          <div className="score-factors">
-            {['Customer ratings', 'Completed jobs', 'Response time', 'Acceptance rate', 'Verification', 'Service history'].map((item) => (
-              <div key={item} className="factor-item"><span className="dot" />{item}</div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="section-shell">
         <div className="section-heading split-heading">
           <div>
@@ -109,29 +89,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section-shell why-box">
-        <div className="section-heading">
-          <div className="eyebrow">Why choose us</div>
-          <h2>Built for modern vehicle support</h2>
-        </div>
-        <div className="why-grid">
-          {[
-            ['Verified network', 'Connected to trusted mechanics and service professionals.'],
-            ['Fast response', 'Quick help for breakdowns, flat tyres, battery issues, and immediate repair requests.'],
-            ['Smart matching', 'Vehicle-specific support based on location, skills, and reliability.'],
-            ['One platform', 'Mechanics, service requests, and spare parts all in one place.']
-          ].map(([title, text]) => (
-            <div key={title} className="why-item">
-              <div className="mini-icon"><ShieldCheck size={18} /></div>
-              <div>
-                <h3>{title}</h3>
-                <p>{text}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       <section className="section-shell stats-panel">
         <div className="stats-row">
           {[
@@ -148,13 +105,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section-shell cta-panel">
-        <div>
-          <div className="eyebrow">Ready to move</div>
-          <h2>Need a mechanic or a spare part? DynaMech is ready.</h2>
-        </div>
-        <Link to="/service-request" className="btn btn-primary">Request Service</Link>
-      </section>
     </>
   );
 }
