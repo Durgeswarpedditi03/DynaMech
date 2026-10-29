@@ -25,8 +25,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/register" element={<Register onLogin={handleLogin} />} />
-          <Route path="/dashboard" element={<ProtectedRoute authUser={authUser} requiredRole="customer"><Dashboard /></ProtectedRoute>} />
-          <Route path="/service-request" element={<ServiceRequest />} />
+          <Route path="/dashboard" element={<ProtectedRoute authUser={authUser} requiredRole="customer"><Dashboard user={authUser} /></ProtectedRoute>} />
+          <Route path="/service-request" element={<ProtectedRoute authUser={authUser} requiredRole="customer"><ServiceRequest user={authUser} /></ProtectedRoute>} />
           <Route path="/mechanics" element={<Mechanics />} />
           <Route path="/spare-parts" element={<SpareParts />} />
           <Route path="/about" element={<section className="section-shell"><div className="section-heading"><div className="eyebrow">About</div><h2>Built for modern mobility care</h2></div><p className="muted-copy">DynaMech connects customers with trusted mechanics and dependable spare-parts support for everyday vehicle issues.</p></section>} />

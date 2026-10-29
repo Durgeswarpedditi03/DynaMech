@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { api } from '../services/api';
 
 export default function Login({ onLogin }) {
   const navigate = useNavigate();
@@ -15,11 +16,11 @@ export default function Login({ onLogin }) {
     setError('');
 
     try {
-      const simulatedUser = { name: 'Customer Demo', email: form.email, role: 'customer' };
-      onLogin?.(simulatedUser);
+      const result = await api.loginCustomer(form);
+      onLogin?.(result.user);
       navigate('/dashboard');
-    } catch {
-      setError('Unable to sign in. Please try again.');
+    } catch (requestError) {
+      setError(requestError.message);
     }
   };
 

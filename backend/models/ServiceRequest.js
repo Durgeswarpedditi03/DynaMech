@@ -16,9 +16,19 @@ const serviceRequestSchema = new mongoose.Schema({
         required: true
     },
 
+    category: {
+        type: String
+    },
+
     problem: {
         type: String,
         required: true
+    },
+
+    urgency: {
+        type: String,
+        enum: ["Routine", "Urgent", "Critical"],
+        default: "Routine"
     },
 
     problemImages: {

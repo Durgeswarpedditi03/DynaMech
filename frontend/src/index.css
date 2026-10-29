@@ -173,6 +173,19 @@ input:focus, select:focus, textarea:focus { border-color: var(--copper); box-sha
 .auth-form { display: grid; gap: 16px; }
 .auth-form label { display: grid; gap: 7px; color: var(--charcoal); font-size: 0.82rem; font-weight: 700; }
 .field-hint { color: var(--muted); font-size: 0.72rem; font-weight: 500; }
+.suggestion-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1px; }
+.suggestion-list:empty { display: none; }
+.suggestion-list button { padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; color: var(--charcoal); background: var(--bg); font-size: 0.7rem; font-weight: 600; transition: 0.2s ease; }
+.suggestion-list button:hover { border-color: var(--copper); color: var(--copper); background: var(--card); }
+.search-select { position: relative; display: grid; gap: 7px; color: var(--charcoal); font-size: 0.82rem; font-weight: 700; }
+.search-select-trigger { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 0.78rem 0.9rem; border: 1px solid var(--border); border-radius: 8px; color: var(--text); background: var(--card); text-align: left; }
+.search-select-trigger:hover, .search-select-trigger[aria-expanded="true"] { border-color: var(--copper); }
+.search-select-menu { position: absolute; top: calc(100% + 4px); right: 0; left: 0; z-index: 10; padding: 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); box-shadow: var(--shadow-lg); }
+.search-select-menu input { padding: 0.6rem 0.7rem; }
+.search-select-options { display: grid; max-height: 190px; margin-top: 6px; overflow-y: auto; }
+.search-select-options button { padding: 8px 9px; border: 0; color: var(--charcoal); background: transparent; font-size: 0.78rem; text-align: left; }
+.search-select-options button:hover { color: var(--copper); background: var(--bg); }
+.search-select-empty { padding: 8px 9px; color: var(--muted); font-size: 0.76rem; font-weight: 500; }
 .auth-footer { margin-bottom: 0; color: var(--muted); font-size: 0.85rem; }
 .auth-footer a { color: var(--copper); font-weight: 700; }
 .form-error { color: var(--error) !important; font-size: 0.82rem; }

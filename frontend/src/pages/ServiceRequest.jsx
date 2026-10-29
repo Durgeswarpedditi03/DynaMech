@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { MapPin, UploadCloud } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { ChevronDown, MapPin, UploadCloud } from 'lucide-react';
+import { api } from '../services/api';
 
 const initialForm = {
   vehicleType: 'bike',
@@ -39,7 +40,59 @@ const vehicleProblemCategories = {
   default: ['Engine', 'Brakes', 'Battery', 'Tyres', 'Electrical', 'Other']
 };
 
-const vehicleTypes = ['Cycle', 'Bike', 'Car'];
+const vehicleTypes = [
+  { value: 'cycle', label: 'Cycle' },
+  { value: 'bike', label: 'Bike' },
+  { value: 'car', label: 'Car' }
+];
+
+function SearchSelect({ label, value, options, onChange }) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const selectRef = useRef(null);
+  const selectedOption = options.find((option) => (typeof option === 'string' ? option : option.value) === value);
+  const selectedLabel = typeof selectedOption === 'string' ? selectedOption : selectedOption?.label || value;
+  const filteredOptions = options.filter((option) => {
+    const optionLabel = typeof option === 'string' ? option : option.label;
+    return optionLabel.toLowerCase().includes(query.toLowerCase());
+  });
+
+  useEffect(() => {
+    const closeOnOutsideClick = (event) => {
+      if (!selectRef.current?.contains(event.target)) setOpen(false);
+    };
+    document.addEventListener('mousedown', closeOnOutsideClick);
+    return () => document.removeEventListener('mousedown', closeOnOutsideClick);
+  }, []);
+
+  const handleSelect = (option) => {
+    onChange(typeof option === 'string' ? option : option.value);
+    setQuery('');
+    setOpen(false);
+  };
+
+  return (
+    <div className="search-select" ref={selectRef}>
+      <span>{label}</span>
+      <button type="button" className="search-select-trigger" onClick={() => setOpen((current) => !current)} aria-expanded={open}>
+        <span>{selectedLabel}</span>
+        <ChevronDown size={16} />
+      </button>
+      {open && (
+        <div className="search-select-menu">
+          <input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder={`Type ${label.toLowerCase()}`} />
+          <div className="search-select-options">
+            {filteredOptions.length ? filteredOptions.map((option) => {
+              const optionValue = typeof option === 'string' ? option : option.value;
+              const optionLabel = typeof option === 'string' ? option : option.label;
+              return <button type="button" key={optionValue} onClick={() => handleSelect(option)}>{optionLabel}</button>;
+            }) : <span className="search-select-empty">No related options</span>}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function getVehicleType(vehicleName) {
   const name = vehicleName.toLowerCase();
@@ -50,14 +103,17 @@ function getVehicleType(vehicleName) {
   return 'default';
 }
 
-export default function ServiceRequest() {
+export default function ServiceRequest({ user }) {
   const [form, setForm] = useState(initialForm);
   const [preview, setPreview] = useState('');
+  const [problemImage, setProblemImage] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const vehicleType = getVehicleType(form.vehicleType);
   const categories = vehicleProblemCategories[vehicleType];
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
+  const updateField = (name, value) => {
     setForm((current) => {
       if (name === 'vehicleType') {
         const nextType = getVehicleType(value);
@@ -71,6 +127,8 @@ export default function ServiceRequest() {
         return { ...current, vehicleModel: value, vehicle: nextVehicle, category: nextCategories.includes(current.category) ? current.category : nextCategories[0] };
       }
 
+      if (name === 'customModel') return { ...current, customModel: value, vehicle: value };
+
       if (name !== 'vehicle') return { ...current, [name]: value };
 
       const nextCategories = vehicleProblemCategories[getVehicleType(value)];
@@ -82,12 +140,51 @@ export default function ServiceRequest() {
     });
   };
 
+  const handleChange = (event) => updateField(event.target.name, event.target.value);
+
   const handleImage = (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Please choose an image smaller than 5 MB.');
+      event.target.value = '';
+      return;
+    }
+
     const reader = new FileReader();
-    reader.onload = () => setPreview(reader.result);
+    reader.onload = () => {
+      const image = String(reader.result);
+      setPreview(image);
+      setProblemImage(image);
+      setError('');
+    };
+    reader.onerror = () => setError('Unable to read the selected image.');
     reader.readAsDataURL(file);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError('');
+    setSuccess('');
+    setIsSubmitting(true);
+
+    try {
+      await api.submitServiceRequest({
+        customerEmail: user.email,
+        vehicle: vehicleType === 'cycle' ? 'Cycle' : form.vehicle,
+        vehicleType: vehicleType.charAt(0).toUpperCase() + vehicleType.slice(1),
+        category: form.category,
+        problem: form.issue,
+        urgency: form.urgency,
+        location: form.location,
+        problemImages: problemImage ? [problemImage] : []
+      });
+      setSuccess('Your request was submitted. You can track it from your dashboard.');
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -98,31 +195,23 @@ export default function ServiceRequest() {
       </div>
 
       <div className="request-layout">
-        <form className="request-form auth-form">
+        <form className="request-form auth-form" onSubmit={handleSubmit}>
           <label>
-            <span>Vehicle type</span>
-            <input name="vehicleType" list="vehicle-types" value={form.vehicleType} onChange={handleChange} placeholder="Type or select cycle, bike, or car" />
-            <datalist id="vehicle-types">
-              {vehicleTypes.map((type) => <option key={type} value={type} />)}
-            </datalist>
+            <SearchSelect label="Vehicle type" value={vehicleType} options={vehicleTypes} onChange={(value) => updateField('vehicleType', value)} />
           </label>
           {(vehicleType === 'bike' || vehicleType === 'car') && (
             <label>
-              <span>Company or model</span>
-              <input name="vehicleModel" list={`${vehicleType}-models`} value={form.vehicleModel} onChange={handleChange} placeholder={`Type your ${vehicleType} company or model`} />
-              <datalist id={`${vehicleType}-models`}>
-                {vehicleModels[vehicleType].map((model) => <option key={model} value={model} />)}
-              </datalist>
-              <small className="field-hint">Start typing for suggestions, or enter any company and model.</small>
+              <SearchSelect label="Company or model" value={form.vehicleModel} options={vehicleModels[vehicleType]} onChange={(value) => updateField('vehicleModel', value)} />
+            </label>
+          )}
+          {form.vehicleModel === 'Other / Enter manually' && (
+            <label>
+              <span>Vehicle model</span>
+              <input name="customModel" value={form.customModel} onChange={handleChange} required />
             </label>
           )}
           <label>
-            <span>Problem category</span>
-            <input name="category" list="problem-categories" value={form.category} onChange={handleChange} placeholder="Type or select a problem" />
-            <datalist id="problem-categories">
-              {categories.map((category) => <option key={category} value={category} />)}
-            </datalist>
-            <small className="field-hint">Suggestions are based on your {vehicleType === 'default' ? 'vehicle' : vehicleType}.</small>
+            <SearchSelect label="Problem category" value={form.category} options={categories} onChange={(value) => updateField('category', value)} />
           </label>
           <label>
             <span>Problem description</span>
@@ -146,7 +235,9 @@ export default function ServiceRequest() {
               <option>Critical</option>
             </select>
           </label>
-          <button type="submit" className="btn btn-primary">Find a Mechanic</button>
+          {error && <p className="form-error" role="alert">{error}</p>}
+          {success && <p role="status">{success}</p>}
+          <button type="submit" className="btn btn-primary" disabled={isSubmitting}>{isSubmitting ? 'Submitting request...' : 'Find a Mechanic'}</button>
         </form>
 
         <div className="map-panel">

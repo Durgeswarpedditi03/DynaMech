@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
 
-const User = require("./models/user");
+const User = require("./models/User");
 const ServiceRequest = require("./models/ServiceRequest");
 const SparePart = require("./models/SparePart");
 const Order = require("./models/Order");
@@ -151,9 +151,14 @@ app.post("/api/register", async (req, res) => {
         await newUser.save();
 
 
-        res.send(
-            "User registered successfully"
-        );
+        res.json({
+            message: "User registered successfully",
+            user: {
+                name: newUser.name,
+                email: newUser.email,
+                role: newUser.role
+            }
+        });
 
     } catch (error) {
 
@@ -208,9 +213,14 @@ app.post("/api/login", async (req, res) => {
         }
 
 
-        res.send(
-            "Login successful"
-        );
+        res.json({
+            message: "Login successful",
+            user: {
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
 
     } catch (error) {
 
@@ -232,7 +242,9 @@ app.post("/api/service-request", async (req, res) => {
             customerEmail,
             vehicle,
             vehicleType,
+            category,
             problem,
+            urgency,
             location,
             problemImages
         } = req.body;
@@ -254,7 +266,11 @@ app.post("/api/service-request", async (req, res) => {
 
             vehicleType: vehicleType,
 
+            category: category,
+
             problem: problem,
+
+            urgency: urgency,
 
             problemImages: Array.isArray(problemImages)
                 ? problemImages.slice(0, 3)

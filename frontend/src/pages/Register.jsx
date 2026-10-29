@@ -1,18 +1,31 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { api } from '../services/api';
 
 export default function Register({ onLogin }) {
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (event) => {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    onLogin?.({ name: form.name, email: form.email, role: 'customer' });
-    navigate('/dashboard');
+    setError('');
+    setIsSubmitting(true);
+
+    try {
+      const result = await api.registerCustomer(form);
+      onLogin?.(result.user);
+      navigate('/dashboard');
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -33,7 +46,8 @@ export default function Register({ onLogin }) {
             <span>Password</span>
             <input type="password" name="password" value={form.password} onChange={handleChange} required />
           </label>
-          <button type="submit" className="btn btn-primary">Create account</button>
+          {error && <p className="form-error">{error}</p>}
+          <button type="submit" className="btn btn-primary" disabled={isSubmitting}>{isSubmitting ? 'Creating account...' : 'Create account'}</button>
         </form>
         <p className="auth-footer">Already a member? <Link to="/login">Login here</Link></p>
       </div>
