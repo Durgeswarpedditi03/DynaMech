@@ -19,7 +19,7 @@ export default function Register({ onLogin }) {
 
     try {
       const result = await api.registerCustomer(form);
-      onLogin?.(result.user);
+      onLogin?.(result.user, result.token);
       navigate('/dashboard');
     } catch (requestError) {
       setError(requestError.message);

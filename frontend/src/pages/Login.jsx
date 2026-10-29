@@ -17,7 +17,7 @@ export default function Login({ onLogin }) {
 
     try {
       const result = await api.loginCustomer(form);
-      onLogin?.(result.user);
+      onLogin?.(result.user, result.token);
       navigate('/dashboard');
     } catch (requestError) {
       setError(requestError.message);

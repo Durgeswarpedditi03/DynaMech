@@ -11,7 +11,7 @@ export default function Dashboard({ user }) {
   useEffect(() => {
     let isCurrent = true;
 
-    api.listCustomerRequests(user.email)
+    api.listCustomerRequests()
       .then((customerRequests) => {
         if (isCurrent) setRequests(customerRequests);
       })
@@ -25,7 +25,7 @@ export default function Dashboard({ user }) {
     return () => {
       isCurrent = false;
     };
-  }, [user.email]);
+  }, []);
 
   const latestRequest = requests[requests.length - 1];
 

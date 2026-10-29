@@ -103,7 +103,7 @@ function getVehicleType(vehicleName) {
   return 'default';
 }
 
-export default function ServiceRequest({ user }) {
+export default function ServiceRequest() {
   const [form, setForm] = useState(initialForm);
   const [preview, setPreview] = useState('');
   const [problemImage, setProblemImage] = useState('');
@@ -170,7 +170,6 @@ export default function ServiceRequest({ user }) {
 
     try {
       await api.submitServiceRequest({
-        customerEmail: user.email,
         vehicle: vehicleType === 'cycle' ? 'Cycle' : form.vehicle,
         vehicleType: vehicleType.charAt(0).toUpperCase() + vehicleType.slice(1),
         category: form.category,

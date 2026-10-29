@@ -1,14 +1,19 @@
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+export const AUTH_TOKEN_KEY = 'dynamech-token';
+export const AUTH_USER_KEY = 'dynamech-user';
 
 export const api = {
   baseUrl: API_BASE,
   async request(path, options = {}) {
+    const { headers = {}, ...requestOptions } = options;
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
     const response = await fetch(`${API_BASE}${path}`, {
+      ...requestOptions,
       headers: {
         'Content-Type': 'application/json',
-        ...(options.headers || {})
-      },
-      ...options
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...headers
+      }
     });
 
     const contentType = response.headers.get('content-type') || '';
@@ -33,7 +38,7 @@ export const api = {
   listSpareParts() {
     return this.request('/api/spare-parts');
   },
-  listCustomerRequests(email) {
-    return this.request(`/api/my-requests/${encodeURIComponent(email)}`);
+  listCustomerRequests() {
+    return this.request('/api/my-requests');
   }
 };

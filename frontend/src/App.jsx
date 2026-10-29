@@ -10,12 +10,41 @@ import ServiceRequest from './pages/ServiceRequest';
 import Mechanics from './pages/Mechanics';
 import SpareParts from './pages/SpareParts';
 import ProtectedRoute from './components/ProtectedRoute';
+import { AUTH_TOKEN_KEY, AUTH_USER_KEY } from './services/api';
+
+function getSavedUser() {
+  const token = localStorage.getItem(AUTH_TOKEN_KEY);
+  const savedUser = localStorage.getItem(AUTH_USER_KEY);
+  if (!token || !savedUser) {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    localStorage.removeItem(AUTH_USER_KEY);
+    return null;
+  }
+
+  try {
+    return JSON.parse(savedUser);
+  } catch (error) {
+    if (!(error instanceof SyntaxError)) throw error;
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    localStorage.removeItem(AUTH_USER_KEY);
+    return null;
+  }
+}
 
 function App() {
-  const [authUser, setAuthUser] = useState(null);
+  const [authUser, setAuthUser] = useState(getSavedUser);
 
-  const handleLogin = (user) => setAuthUser({ ...user, role: user.role || 'customer' });
-  const handleLogout = () => setAuthUser(null);
+  const handleLogin = (user, token) => {
+    const authenticatedUser = { ...user, role: user.role || 'customer' };
+    localStorage.setItem(AUTH_TOKEN_KEY, token);
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(authenticatedUser));
+    setAuthUser(authenticatedUser);
+  };
+  const handleLogout = () => {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    localStorage.removeItem(AUTH_USER_KEY);
+    setAuthUser(null);
+  };
 
   return (
     <div className="app-shell">
@@ -26,7 +55,7 @@ function App() {
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/register" element={<Register onLogin={handleLogin} />} />
           <Route path="/dashboard" element={<ProtectedRoute authUser={authUser} requiredRole="customer"><Dashboard user={authUser} /></ProtectedRoute>} />
-          <Route path="/service-request" element={<ProtectedRoute authUser={authUser} requiredRole="customer"><ServiceRequest user={authUser} /></ProtectedRoute>} />
+          <Route path="/service-request" element={<ProtectedRoute authUser={authUser} requiredRole="customer"><ServiceRequest /></ProtectedRoute>} />
           <Route path="/mechanics" element={<Mechanics />} />
           <Route path="/spare-parts" element={<SpareParts />} />
           <Route path="/about" element={<section className="section-shell"><div className="section-heading"><div className="eyebrow">About</div><h2>Built for modern mobility care</h2></div><p className="muted-copy">DynaMech connects customers with trusted mechanics and dependable spare-parts support for everyday vehicle issues.</p></section>} />

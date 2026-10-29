@@ -11,6 +11,12 @@ const SparePart = require("./models/SparePart");
 const Order = require("./models/Order");
 const Admin = require("./models/Admin");
 const Mechanic = require("./models/Mechanic");
+const {
+    assertJwtSecret,
+    authenticateToken,
+    createAuthToken,
+    requireCustomer
+} = require("./auth");
 
 const app = express();
 
@@ -153,6 +159,7 @@ app.post("/api/register", async (req, res) => {
 
         res.json({
             message: "User registered successfully",
+            token: createAuthToken(newUser),
             user: {
                 name: newUser.name,
                 email: newUser.email,
@@ -192,9 +199,7 @@ app.post("/api/login", async (req, res) => {
         // Check user
 
         if (!user) {
-            return res.status(400).send(
-                "User not found"
-            );
+            return res.status(401).send("Invalid email or password");
         }
 
 
@@ -207,14 +212,13 @@ app.post("/api/login", async (req, res) => {
 
 
         if (!passwordMatch) {
-            return res.status(400).send(
-                "Incorrect password"
-            );
+            return res.status(401).send("Invalid email or password");
         }
 
 
         res.json({
             message: "Login successful",
+            token: createAuthToken(user),
             user: {
                 name: user.name,
                 email: user.email,
@@ -235,11 +239,10 @@ app.post("/api/login", async (req, res) => {
 
 // ==================== Request a Mechanic ====================
 
-app.post("/api/service-request", async (req, res) => {
+app.post("/api/service-request", authenticateToken, requireCustomer, async (req, res) => {
     try {
 
         const {
-            customerEmail,
             vehicle,
             vehicleType,
             category,
@@ -249,9 +252,9 @@ app.post("/api/service-request", async (req, res) => {
             problemImages
         } = req.body;
 
-        if (!customerEmail || !vehicle || !vehicleType || !problem || !location) {
+        if (!vehicle || !vehicleType || !problem || !location) {
             return res.status(400).send(
-                "Customer email, vehicle, vehicle type, problem, and location are required"
+                "Vehicle, vehicle type, problem, and location are required"
             );
         }
 
@@ -260,7 +263,7 @@ app.post("/api/service-request", async (req, res) => {
 
         const newRequest = new ServiceRequest({
 
-            customerEmail: customerEmail,
+            customerEmail: req.authUser.email,
 
             vehicle: vehicle,
 
@@ -310,18 +313,11 @@ app.post("/api/service-request", async (req, res) => {
 
 // ==================== My Requests ====================
 
-app.get("/api/my-requests/:email", async (req, res) => {
+app.get("/api/my-requests", authenticateToken, requireCustomer, async (req, res) => {
     try {
 
-        // Get customer email
-
-        const email = req.params.email;
-
-
-        // Find customer's requests
-
         const requests = await ServiceRequest.find({
-            customerEmail: email
+            customerEmail: req.authUser.email
         });
 
 
@@ -395,13 +391,12 @@ app.post("/api/spare-parts", async (req, res) => {
 
 // Create a new order
 
-app.post("/api/orders", async (req, res) => {
+app.post("/api/orders", authenticateToken, requireCustomer, async (req, res) => {
     try {
 
         // Get order details from React
 
         const {
-            customerEmail,
             partName,
             price,
             quantity
@@ -442,7 +437,7 @@ app.post("/api/orders", async (req, res) => {
 
         const newOrder = new Order({
 
-            customerEmail: customerEmail,
+            customerEmail: req.authUser.email,
 
             partName: partName,
 
@@ -487,18 +482,11 @@ app.post("/api/orders", async (req, res) => {
 
 // Get customer's orders
 
-app.get("/api/orders/:email", async (req, res) => {
+app.get("/api/orders", authenticateToken, requireCustomer, async (req, res) => {
     try {
 
-        // Get customer email
-
-        const email = req.params.email;
-
-
-        // Find customer's orders
-
         const orders = await Order.find({
-            customerEmail: email
+            customerEmail: req.authUser.email
         });
 
 
@@ -807,10 +795,14 @@ app.post("/test", (req, res) => {
 
 // ==================== Start Server ====================
 
-app.listen(5000, () => {
+assertJwtSecret();
+
+const port = Number(process.env.PORT) || 5000;
+
+app.listen(port, () => {
 
     console.log(
-        "DynaMech server is running on port 5000"
+        `DynaMech server is running on port ${port}`
     );
 
 });
