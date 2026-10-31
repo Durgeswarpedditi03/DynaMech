@@ -214,7 +214,7 @@ export default function ServiceRequest() {
           </label>
           <label>
             <span>Problem description</span>
-            <textarea rows="4" name="issue" value={form.issue} onChange={handleChange} />
+            <textarea rows="4" name="issue" value={form.issue} onChange={handleChange} required />
           </label>
           <label className="upload-box">
             <span>Upload image</span>
@@ -224,7 +224,7 @@ export default function ServiceRequest() {
           {preview && <img src={preview} alt="Problem preview" className="image-preview" />}
           <label>
             <span>Current location</span>
-            <input name="location" value={form.location} onChange={handleChange} />
+            <input name="location" value={form.location} onChange={handleChange} required />
           </label>
           <label>
             <span>Urgency</span>

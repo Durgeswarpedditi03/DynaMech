@@ -396,18 +396,23 @@ app.post("/api/orders", authenticateToken, requireCustomer, async (req, res) => 
 
         // Get order details from React
 
-        const {
-            partName,
-            price,
-            quantity
-        } = req.body;
+        const { partName, quantity } = req.body;
+
+        if (
+            typeof partName !== "string" ||
+            !partName.trim() ||
+            !Number.isInteger(quantity) ||
+            quantity < 1
+        ) {
+            return res.status(400).json({
+                message: "A spare part and a positive whole-number quantity are required"
+            });
+        }
 
 
         // Find spare part
 
-        const sparePart = await SparePart.findOne({
-            partName: partName
-        });
+        const sparePart = await SparePart.findOne({ partName: partName.trim() });
 
 
         // Check spare part
@@ -421,53 +426,37 @@ app.post("/api/orders", authenticateToken, requireCustomer, async (req, res) => 
 
         // Check stock
 
-        if (quantity > sparePart.quantity) {
-            return res.status(400).send(
-                "Not enough stock available"
-            );
+        const stockUpdate = await SparePart.updateOne(
+            { _id: sparePart._id, quantity: { $gte: quantity } },
+            { $inc: { quantity: -quantity } }
+        );
+
+        if (stockUpdate.modifiedCount !== 1) {
+            return res.status(400).json({ message: "Not enough stock available" });
         }
 
-
-        // Calculate total price
-
-        const totalPrice = price * quantity;
-
-
-        // Create order
-
         const newOrder = new Order({
-
             customerEmail: req.authUser.email,
-
-            partName: partName,
-
-            price: price,
-
+            partName: sparePart.partName,
+            price: sparePart.price,
             quantity: quantity,
-
-            totalPrice: totalPrice
+            totalPrice: sparePart.price * quantity
         });
 
+        try {
+            await newOrder.save();
+        } catch (error) {
+            await SparePart.updateOne(
+                { _id: sparePart._id },
+                { $inc: { quantity: quantity } }
+            );
+            throw error;
+        }
 
-        // Save order
-
-        await newOrder.save();
-
-
-        // Reduce stock
-
-        sparePart.quantity =
-            sparePart.quantity - quantity;
-
-
-        // Save updated stock
-
-        await sparePart.save();
-
-
-        res.send(
-            "Order placed successfully"
-        );
+        res.status(201).json({
+            message: "Order placed successfully",
+            order: newOrder
+        });
 
     } catch (error) {
 

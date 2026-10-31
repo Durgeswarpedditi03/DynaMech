@@ -1,9 +1,30 @@
+import { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Hero from '../components/Hero';
-import { spareParts } from '../data/mockData';
+import SparePartCard from '../components/SparePartCard';
+import { api } from '../services/api';
 
 export default function Home() {
+  const [spareParts, setSpareParts] = useState([]);
+  const [partsError, setPartsError] = useState('');
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    api.listSpareParts()
+      .then((parts) => {
+        if (isCurrent) setSpareParts(parts);
+      })
+      .catch((error) => {
+        if (isCurrent) setPartsError(error.message);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, []);
+
   return (
     <>
       <Hero />
@@ -32,22 +53,10 @@ export default function Home() {
           </div>
           <Link to="/spare-parts" className="text-link">Open market <ArrowRight size={16} /></Link>
         </div>
+        {partsError && <p className="form-error" role="alert">{partsError}</p>}
+        {!partsError && spareParts.length === 0 && <p>Loading spare parts...</p>}
         <div className="part-grid">
-          {spareParts.map((part) => (
-            <article key={part.id} className="part-card">
-              <img src={part.image} alt={part.name} />
-              <div className="part-body">
-                <div className="part-label-row"><span>{part.category}</span><span>⭐ {part.rating}</span></div>
-                <h3>{part.name}</h3>
-                <p>{part.compatibility}</p>
-                <div className="part-buy-row">
-                  <strong>₹{part.price}</strong>
-                  <span className={part.inStock ? 'stock ok' : 'stock warn'}>{part.inStock ? 'In Stock' : 'Low Stock'}</span>
-                </div>
-                <button className="btn btn-primary small full">Add to Cart</button>
-              </div>
-            </article>
-          ))}
+          {spareParts.slice(0, 6).map((part) => <SparePartCard key={part._id} part={part} />)}
         </div>
       </section>
 

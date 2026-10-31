@@ -1,7 +1,11 @@
+import { useState } from 'react';
 import { Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { mechanics } from '../data/mockData';
 
 export default function Mechanics() {
+  const [selectedMechanic, setSelectedMechanic] = useState(null);
+
   return (
     <section className="section-shell">
       <div className="section-heading">
@@ -29,12 +33,32 @@ export default function Mechanics() {
               <span>{mechanic.distance}</span>
             </div>
             <div className="card-actions">
-              <button className="btn btn-ghost small">View Profile</button>
-              <button className="btn btn-primary small">Request Mechanic</button>
+              <button type="button" className="btn btn-ghost small" onClick={() => setSelectedMechanic(mechanic)}>View Profile</button>
+              <Link to="/service-request" className="btn btn-primary small">Request Mechanic</Link>
             </div>
           </article>
         ))}
       </div>
+      {selectedMechanic && (
+        <div className="profile-overlay" onClick={(event) => {
+          if (event.target === event.currentTarget) setSelectedMechanic(null);
+        }}>
+          <section className="profile-dialog" role="dialog" aria-modal="true" aria-labelledby="mechanic-profile-title">
+            <button type="button" className="profile-close" aria-label="Close profile" onClick={() => setSelectedMechanic(null)}>×</button>
+            <div className="mechanic-header">
+              <img src={selectedMechanic.avatar} alt="" />
+              <div>
+                <h3 id="mechanic-profile-title">{selectedMechanic.name}</h3>
+                <span className="verified-badge">{selectedMechanic.verified ? '✓ Verified Mechanic' : 'New Partner'}</span>
+              </div>
+            </div>
+            <p><strong>Skills:</strong> {selectedMechanic.skills.join(' • ')}</p>
+            <p><strong>Vehicles:</strong> {selectedMechanic.vehicleTypes.join(' • ')}</p>
+            <p><strong>Rating:</strong> {selectedMechanic.rating} · {selectedMechanic.jobs} completed jobs</p>
+            <p><strong>Availability:</strong> {selectedMechanic.available ? 'Available now' : 'Currently offline'} · {selectedMechanic.distance} away</p>
+          </section>
+        </div>
+      )}
     </section>
   );
 }

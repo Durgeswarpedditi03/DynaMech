@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 
 export default function Register({ onLogin }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -20,7 +21,8 @@ export default function Register({ onLogin }) {
     try {
       const result = await api.registerCustomer(form);
       onLogin?.(result.user, result.token);
-      navigate('/dashboard');
+      const returnTo = location.state?.from;
+      navigate(typeof returnTo === 'string' ? returnTo : returnTo?.pathname || '/dashboard', { replace: true });
     } catch (requestError) {
       setError(requestError.message);
     } finally {

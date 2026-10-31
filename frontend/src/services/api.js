@@ -2,6 +2,8 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 export const AUTH_TOKEN_KEY = 'dynamech-token';
 export const AUTH_USER_KEY = 'dynamech-user';
 
+let sparePartsRequest;
+
 export const api = {
   baseUrl: API_BASE,
   async request(path, options = {}) {
@@ -36,7 +38,21 @@ export const api = {
     return this.request('/api/service-request', { method: 'POST', body: JSON.stringify(payload) });
   },
   listSpareParts() {
-    return this.request('/api/spare-parts');
+    if (!sparePartsRequest) {
+      sparePartsRequest = this.request('/api/spare-parts').catch((error) => {
+        sparePartsRequest = null;
+        throw error;
+      });
+    }
+
+    return sparePartsRequest;
+  },
+  createOrder(payload) {
+    return this.request('/api/orders', { method: 'POST', body: JSON.stringify(payload) })
+      .then((result) => {
+        sparePartsRequest = null;
+        return result;
+      });
   },
   listCustomerRequests() {
     return this.request('/api/my-requests');

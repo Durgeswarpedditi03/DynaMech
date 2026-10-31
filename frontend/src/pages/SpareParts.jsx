@@ -1,16 +1,35 @@
-import { useMemo, useState } from 'react';
-import { spareParts } from '../data/mockData';
+import { useEffect, useState } from 'react';
+import SparePartCard from '../components/SparePartCard';
+import { api } from '../services/api';
 
 export default function SpareParts() {
   const [query, setQuery] = useState('');
-  const [category, setCategory] = useState('All');
+  const [spareParts, setSpareParts] = useState([]);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
-  const categories = useMemo(() => ['All', ...new Set(spareParts.map((part) => part.category))], []);
+  useEffect(() => {
+    let isCurrent = true;
+
+    api.listSpareParts()
+      .then((parts) => {
+        if (isCurrent) setSpareParts(parts);
+      })
+      .catch((requestError) => {
+        if (isCurrent) setError(requestError.message);
+      })
+      .finally(() => {
+        if (isCurrent) setIsLoading(false);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, []);
 
   const filteredParts = spareParts.filter((part) => {
-    const matchesQuery = part.name.toLowerCase().includes(query.toLowerCase());
-    const matchesCategory = category === 'All' || part.category === category;
-    return matchesQuery && matchesCategory;
+    const searchText = `${part.partName} ${part.description}`.toLowerCase();
+    return searchText.includes(query.toLowerCase());
   });
 
   return (
@@ -23,29 +42,21 @@ export default function SpareParts() {
       </div>
 
       <div className="filter-row">
-        <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search parts" />
-        <select value={category} onChange={(event) => setCategory(event.target.value)}>
-          {categories.map((option) => <option key={option}>{option}</option>)}
-        </select>
+        <input
+          type="search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Search parts"
+          aria-label="Search spare parts"
+        />
       </div>
 
+      {error && <p className="form-error" role="alert">{error}</p>}
+      {isLoading && <p>Loading spare parts...</p>}
       <div className="part-grid">
-        {filteredParts.map((part) => (
-          <article key={part.id} className="part-card">
-            <img src={part.image} alt={part.name} />
-            <div className="part-body">
-              <div className="part-label-row"><span>{part.category}</span><span>⭐ {part.rating}</span></div>
-              <h3>{part.name}</h3>
-              <p>{part.compatibility}</p>
-              <div className="part-buy-row">
-                <strong>₹{part.price}</strong>
-                <span className={part.inStock ? 'stock ok' : 'stock warn'}>{part.inStock ? 'In Stock' : 'Low Stock'}</span>
-              </div>
-              <button className="btn btn-primary small full">Add to Cart</button>
-            </div>
-          </article>
-        ))}
+        {!isLoading && !error && filteredParts.map((part) => <SparePartCard key={part._id} part={part} />)}
       </div>
+      {!isLoading && !error && filteredParts.length === 0 && <p>No spare parts match your search.</p>}
     </section>
   );
 }

@@ -1,4 +1,5 @@
 import { Cog } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
@@ -14,28 +15,25 @@ export default function Footer() {
         <div>
           <h4>Company</h4>
           <ul>
-            <li>About</li>
-            <li>Services</li>
-            <li>Pricing</li>
-            <li>Partners</li>
+            <li><Link to="/about">About DynaMech</Link></li>
+            <li><Link to="/services">Our services</Link></li>
+            <li><Link to="/how-it-works">How it works</Link></li>
           </ul>
         </div>
         <div>
-          <h4>Support</h4>
+          <h4>Explore</h4>
           <ul>
-            <li>Help Centre</li>
-            <li>Contact</li>
-            <li>Roadside</li>
-            <li>Safety</li>
+            <li><Link to="/mechanics">Find a mechanic</Link></li>
+            <li><Link to="/spare-parts">Spare parts</Link></li>
+            <li><Link to="/service-request">Request assistance</Link></li>
           </ul>
         </div>
         <div>
-          <h4>Follow</h4>
+          <h4>Account</h4>
           <ul>
-            <li>Instagram</li>
-            <li>LinkedIn</li>
-            <li>Facebook</li>
-            <li>X / Twitter</li>
+            <li><Link to="/login">Login</Link></li>
+            <li><Link to="/register">Create an account</Link></li>
+            <li><Link to="/dashboard">Customer dashboard</Link></li>
           </ul>
         </div>
       </div>
